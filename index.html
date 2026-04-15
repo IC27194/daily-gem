@@ -3,212 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Movie Gem Daily</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Movie Gem | 2026 Official</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4facfe;
-            --secondary: #00f2fe;
-            --bg: #0b0c14;
-            --tile-bg: #1a1b26;
-            --tile-border: #2f334d;
-            --correct: #538d4e;
-            --present: #b59f3b;
-            --absent: #3a3a3c;
-            --kb-key: #818384;
-            --glass: rgba(255, 255, 255, 0.05);
-            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #22d3ee;
+            --bg: #030712;
+            --correct: #10b981;
+            --present: #f59e0b;
+            --absent: #374151;
+            --tile: rgba(255, 255, 255, 0.03);
+            --gem-hue: 280deg; 
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(79, 172, 254, 0.15) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(0, 242, 254, 0.08) 0px, transparent 50%);
-            color: white;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: #f8fafc;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
-            -webkit-font-smoothing: antialiased;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%);
         }
 
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 90%;
-            max-width: 420px;
-            margin: 15px 0 10px 0;
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; max-width: 500px; padding: 20px; z-index: 10;
         }
 
-        .stat-item {
-            background: var(--glass);
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(4px);
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .brand { font-weight: 700; font-size: 1.2rem; letter-spacing: -0.5px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+
+        .stat-pill {
+            background: rgba(255,255,255,0.07); padding: 8px 18px; border-radius: 99px;
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(15px);
+            display: flex; gap: 15px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.3s;
         }
+        .stat-pill:hover { background: rgba(255,255,255,0.12); border-color: var(--accent); }
 
-        #xp-container {
-            width: 90%;
-            max-width: 420px;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            margin-bottom: 15px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
+        .progress-wrapper { width: 90%; max-width: 400px; margin-bottom: 20px; }
+        .xp-track { height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+        #xp-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-        #xp-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            box-shadow: 0 0 15px rgba(79, 172, 254, 0.7);
-            transition: width 0.8s ease;
-        }
+        .clue-box { text-align: center; margin-bottom: 15px; }
+        .cat-tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 5px; }
+        .emoji-display { font-size: 3.2rem; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
 
-        .category-badge {
-            background: rgba(79, 172, 254, 0.1);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .emoji-clue {
-            font-size: 2.8rem;
-            margin: 10px 0;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-        }
-
-        #game-board {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: auto;
-        }
-
-        .row { display: flex; gap: 5px; justify-content: center; }
-
+        #game-board { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; justify-content: center; width: 100%; max-width: 600px; padding: 0 10px; }
+        .row { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
+        
         .tile {
-            width: 36px;
-            height: 44px;
-            background-color: var(--tile-bg);
-            border: 2px solid var(--tile-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            border-radius: 6px;
-            transition: all 0.2s ease;
+            width: 36px; height: 46px; background: var(--tile); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; font-weight: 700; transition: 0.3s;
         }
+        .tile.space { width: 15px; border: none; background: none; }
+        .tile.pop { transform: scale(1.1); border-color: var(--primary); background: rgba(99,102,241,0.1); }
 
-        .tile.pop { transform: scale(1.1); border-color: #565f89; }
-        .tile.correct { background-color: var(--correct); border-color: var(--correct); }
-        .tile.present { background-color: var(--present); border-color: var(--present); }
-        .tile.absent { background-color: var(--absent); border-color: var(--absent); }
+        .tile.correct { background: var(--correct); border-color: var(--correct); box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+        .tile.present { background: var(--present); border-color: var(--present); }
+        .tile.absent { background: var(--absent); border-color: var(--absent); opacity: 0.5; }
 
-        .tile.flip { animation: flipIn 0.5s ease forwards; }
-        @keyframes flipIn {
-            0% { transform: rotateX(0deg); }
-            50% { transform: rotateX(90deg); }
-            100% { transform: rotateX(0deg); }
-        }
-
-        #keyboard {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 20px 20px 0 0;
-        }
-
-        .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; }
-
+        #keyboard { width: 100%; max-width: 500px; padding: 12px; background: rgba(10, 15, 30, 0.9); backdrop-filter: blur(25px); border-radius: 20px 20px 0 0; transition: 0.3s; }
+        .kb-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 7px; }
         .key {
-            background: var(--kb-key);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 16px 0;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            flex: 1;
-            max-width: 40px;
-            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 6px; height: 50px;
+            flex: 1; max-width: 42px; font-weight: 600; cursor: pointer; font-size: 0.85rem;
         }
+        .key.wide { max-width: 70px; flex: 1.6; background: rgba(255,255,255,0.2); }
+        .key:active { transform: translateY(2px); background: var(--primary); }
 
-        .key.wide { max-width: 65px; flex: 1.5; font-size: 0.75rem; }
-        .key.correct { background-color: var(--correct); }
-        .key.present { background-color: var(--present); }
-        .key.absent { background-color: #242529; opacity: 0.5; }
-
-        #overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 999;
+        .modal-overlay { 
+            display: none; position: fixed; inset: 0; 
+            background: rgba(3, 7, 18, 0.4); 
+            backdrop-filter: blur(3px); 
+            z-index: 100; 
         }
-
+        
         .modal {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 85%; max-width: 340px;
-            background: rgba(18, 20, 32, 0.85);
-            backdrop-filter: blur(20px);
-            padding: 40px 20px;
-            border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            z-index: 1000;
-            box-shadow: var(--shadow);
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 85%; max-width: 360px; text-align: center; color: white;
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 30px 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+        }
+
+        #modal-gem {
+            font-size: 5rem; filter: hue-rotate(var(--gem-hue));
+            animation: gemBurst 1.2s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards,
+                       gemFloat 3s ease-in-out infinite 1.2s;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        @keyframes gemBurst {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; filter: hue-rotate(var(--gem-hue)) brightness(5); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; filter: hue-rotate(var(--gem-hue)) brightness(1); }
+        }
+
+        @keyframes gemFloat {
+            0%, 100% { transform: translateY(0); filter: hue-rotate(var(--gem-hue)) drop-shadow(0 0 10px var(--accent)); }
+            50% { transform: translateY(-15px); filter: hue-rotate(var(--gem-hue)) drop-shadow(0 0 30px var(--primary)); }
+        }
+
+        #vault {
+            position: fixed; top: 0; right: -100%; width: 100%; max-width: 320px; height: 100%;
+            background: rgba(10, 11, 20, 0.98); backdrop-filter: blur(20px); z-index: 1000; transition: 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+            padding: 25px; border-left: 1px solid rgba(255,255,255,0.1); overflow-y: auto;
+        }
+        #vault.open { right: 0; }
+        .gem-card {
+            background: rgba(255,255,255,0.04); border-radius: 12px; padding: 12px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.05);
         }
 
         .action-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 30px;
-            font-weight: 700;
-            margin-top: 20px;
-            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none;
+            padding: 14px 20px; border-radius: 12px; color: white; font-weight: 700; cursor: pointer; 
+            width: 100%; transition: 0.2s;
         }
+        .action-btn:active { transform: scale(0.95); }
+
+        #countdown { font-family: monospace; font-size: 1.2rem; color: var(--accent); margin-top: 15px; font-weight: 700; letter-spacing: 1px; }
+
+        .close-modal {
+            position: absolute; top: 15px; right: 15px; background: none; border: none; 
+            color: white; font-size: 1.5rem; cursor: pointer; opacity: 0.5; transition: 0.2s;
+        }
+        .close-modal:hover { opacity: 1; }
     </style>
 </head>
 <body>
 
-    <div class="stats-bar">
-        <div class="stat-item">💎 <span id="gem-count">0</span></div>
-        <div class="category-badge" id="category">Fetching...</div>
-        <div class="stat-item">🔥 <span id="streak-count">0</span></div>
+    <nav>
+        <div class="brand">MOVIE GEM</div>
+        <div class="stat-pill" onclick="toggleVault()">
+            <span>💎 <span id="gem-count">0</span></span>
+            <span>🔥 <span id="streak-count">0</span></span>
+        </div>
+    </nav>
+
+    <div class="progress-wrapper">
+        <div class="xp-track"><div id="xp-bar"></div></div>
     </div>
 
-    <div id="xp-container">
-        <div id="xp-bar"></div>
+    <div class="clue-box">
+        <div class="cat-tag" id="category">...</div>
+        <div class="emoji-display" id="emojis">🎬</div>
     </div>
 
-    <div class="emoji-clue" id="emojis">🎬🍿✨</div>
     <div id="game-board"></div>
 
     <div id="keyboard">
@@ -217,109 +171,117 @@
         <div class="kb-row" id="kb3"></div>
     </div>
 
-    <div id="overlay"></div>
-    <div id="win-screen" class="modal">
-        <div style="font-size: 4rem;">💎</div>
-        <h2 style="margin: 10px 0;">GEM COLLECTED!</h2>
-        <p id="win-msg"></p>
-        <button class="action-btn" onclick="location.reload()">Next Gem Tomorrow</button>
+    <div id="vault">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0">Vault</h2>
+            <button onclick="toggleVault()" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">×</button>
+        </div>
+        <div id="vault-list"></div>
     </div>
 
-    <div id="lose-screen" class="modal">
-        <div style="font-size: 4rem;">🥺</div>
-        <h2>OUT OF TRIES</h2>
-        <p id="lose-msg"></p>
-        <button class="action-btn" onclick="location.reload()">Try Again Tomorrow</button>
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <div id="modal-gem">💎</div>
+            <h2 id="win-status" style="margin:0; font-size:1.8rem; letter-spacing:-1px;">UNLOCKED</h2>
+            <p id="modal-msg" style="opacity:0.7; margin-bottom:20px; font-size:0.9rem;"></p>
+            
+            <button class="action-btn" id="share-btn" onclick="shareResult()">SHARE 📤</button>
+            <div id="countdown">00:00:00</div>
+        </div>
     </div>
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbyW2C-L9ud-uFn_e3QOJoRzn49lafCMh5PiiB7-VakJMb89F86TdEowo9uD5SN85R_k/exec';
+        
+        let fullTitle = "", cleanTitle = "", currentAttempt = 0, currentGuess = "";
+        let isGameOver = false, wonGame = false;
+        let guessHistory = []; 
+        
+        const todayStr = new Date().toDateString();
+        const dailyHue = (Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000) * 137) % 360;
+        document.documentElement.style.setProperty('--gem-hue', dailyHue + 'deg');
 
-        let targetMovie = "";
-        let currentAttempt = 0;
-        let currentGuess = "";
-        let isGameOver = false;
-        let isEvaluating = false;
-
-        let gems = parseInt(localStorage.getItem('gems')) || 0;
+        // Initial Data Load
         let streak = parseInt(localStorage.getItem('streak')) || 0;
-        document.getElementById('gem-count').innerText = gems;
-        document.getElementById('streak-count').innerText = streak;
+        let vaultData = JSON.parse(localStorage.getItem('movieVault')) || [];
+        
+        async function init() {
+            updateStats(); // Force correction on load
 
-        async function initGame() {
-            try {
-                const response = await fetch(API_URL + '?nocache=' + new Date().getTime(), {
-                    method: 'GET',
-                    redirect: 'follow'
-                });
-                const data = await response.json();
-                if (!data || !data.word) throw new Error("Data error");
-
-                targetMovie = data.word.toUpperCase().replace(/[\s-]/g, ''); 
-                document.getElementById('emojis').innerText = data.emojis;
-                document.getElementById('category').innerText = data.cat;
-                
-                createBoard(targetMovie.length);
-                createKeyboard();
-                document.addEventListener('keydown', handlePhysicalInput);
-            } catch (err) {
-                document.getElementById('category').innerText = "CONNECTION ERROR";
-                console.error(err);
+            if (localStorage.getItem('lastPlayedDate') === todayStr) {
+                document.getElementById('category').innerText = "COME BACK TOMORROW";
+                document.getElementById('emojis').innerText = "⏳";
+                document.getElementById('keyboard').style.opacity = "0.3";
+                document.getElementById('keyboard').style.pointerEvents = "none";
+                showLockoutScreen();
+                return;
             }
+
+            try {
+                const res = await fetch(API_URL + '?nocache=' + Date.now());
+                const data = await res.json();
+                fullTitle = data.word.toUpperCase();
+                cleanTitle = fullTitle.replace(/[^A-Z]/g, '');
+                
+                document.getElementById('category').innerText = data.cat;
+                document.getElementById('emojis').innerText = data.emojis;
+                
+                renderBoard();
+                renderKeyboard();
+                
+                document.addEventListener('keydown', (e) => {
+                    if (isGameOver) return;
+                    if (e.key === 'Enter') handleInput('✓');
+                    else if (e.key === 'Backspace') handleInput('⌫');
+                    else if (/^[a-zA-Z]$/.test(e.key)) handleInput(e.key.toUpperCase());
+                });
+            } catch (e) { document.getElementById('category').innerText = "CONNECTION ERROR"; }
         }
 
-        function createBoard(len) {
+        function renderBoard() {
             const board = document.getElementById('game-board');
             for (let i = 0; i < 6; i++) {
                 const row = document.createElement('div');
                 row.className = 'row';
-                for (let j = 0; j < len; j++) {
+                for (let char of fullTitle) {
                     const tile = document.createElement('div');
-                    tile.className = 'tile';
+                    tile.className = char === ' ' ? 'tile space' : 'tile';
                     row.appendChild(tile);
                 }
                 board.appendChild(row);
             }
         }
 
-        function createKeyboard() {
+        function renderKeyboard() {
             const rows = ["QWERTYUIOP", "ASDFGHJKL", "✓ZXCVBNM⌫"];
-            rows.forEach((rowStr, idx) => {
-                const container = document.getElementById(`kb${idx+1}`);
-                const keys = rowStr.match(/✓|⌫|[A-Z]/g);
-                keys.forEach(key => {
+            rows.forEach((rowStr, i) => {
+                const container = document.getElementById(`kb${i+1}`);
+                rowStr.match(/✓|⌫|[A-Z]/g).forEach(key => {
                     const btn = document.createElement('button');
-                    btn.className = 'key';
-                    if (key === '✓' || key === '⌫') btn.classList.add('wide');
+                    btn.className = 'key' + (key.length > 1 ? ' wide' : '');
                     btn.innerText = key === '✓' ? 'ENTER' : key === '⌫' ? 'DEL' : key;
-                    btn.id = `key-${key}`;
+                    btn.id = `k-${key}`;
                     btn.onclick = () => handleInput(key);
                     container.appendChild(btn);
                 });
             });
         }
 
-        function handlePhysicalInput(e) {
-            if (isGameOver || isEvaluating) return;
-            if (e.key === 'Enter') handleInput('✓');
-            else if (e.key === 'Backspace') handleInput('⌫');
-            else if (/^[a-zA-Z]$/.test(e.key)) handleInput(e.key.toUpperCase());
-        }
-
         function handleInput(key) {
-            if (isGameOver || isEvaluating) return;
+            if (isGameOver) return;
             const rows = document.getElementsByClassName('row');
-            const tiles = rows[currentAttempt].children;
+            const tiles = Array.from(rows[currentAttempt].children).filter(t => !t.classList.contains('space'));
 
-            if (key === "⌫") {
+            if (key === '⌫') {
                 if (currentGuess.length > 0) {
                     currentGuess = currentGuess.slice(0, -1);
                     tiles[currentGuess.length].innerText = "";
                     tiles[currentGuess.length].classList.remove('pop');
                 }
-            } else if (key === "✓") {
-                if (currentGuess.length === targetMovie.length) submitGuess();
-            } else if (currentGuess.length < targetMovie.length) {
+            } else if (key === '✓') {
+                if (currentGuess.length === cleanTitle.length) submitGuess();
+            } else if (currentGuess.length < cleanTitle.length) {
                 tiles[currentGuess.length].innerText = key;
                 tiles[currentGuess.length].classList.add('pop');
                 currentGuess += key;
@@ -327,69 +289,160 @@
         }
 
         async function submitGuess() {
-            isEvaluating = true;
             const rows = document.getElementsByClassName('row');
-            const tiles = rows[currentAttempt].children;
-            let correctInGuess = 0;
-            const targetLetters = targetMovie.split('');
-            const tileStates = new Array(targetMovie.length).fill('absent');
+            const tiles = Array.from(rows[currentAttempt].children).filter(t => !t.classList.contains('space'));
+            let targetArr = cleanTitle.split('');
+            const states = new Array(cleanTitle.length).fill('absent');
 
-            for (let i = 0; i < targetMovie.length; i++) {
-                if (currentGuess[i] === targetLetters[i]) {
-                    tileStates[i] = 'correct';
-                    targetLetters[i] = null;
-                    correctInGuess++;
+            for (let i = 0; i < cleanTitle.length; i++) {
+                if (currentGuess[i] === cleanTitle[i]) {
+                    states[i] = 'correct';
+                    targetArr[i] = null;
+                }
+            }
+            for (let i = 0; i < cleanTitle.length; i++) {
+                if (states[i] === 'absent' && targetArr.includes(currentGuess[i])) {
+                    states[i] = 'present';
+                    targetArr[targetArr.indexOf(currentGuess[i])] = null;
                 }
             }
 
-            for (let i = 0; i < targetMovie.length; i++) {
-                if (tileStates[i] === 'absent' && targetLetters.includes(currentGuess[i])) {
-                    tileStates[i] = 'present';
-                    targetLetters[targetLetters.indexOf(currentGuess[i])] = null;
+            let emojiRow = "";
+            let cIdx = 0;
+            for (let char of fullTitle) {
+                if (char === ' ') { emojiRow += '  '; } 
+                else {
+                    if (states[cIdx] === 'correct') emojiRow += '🟩';
+                    else if (states[cIdx] === 'present') emojiRow += '🟨';
+                    else emojiRow += '⬛';
+                    cIdx++;
                 }
             }
+            guessHistory.push(emojiRow);
 
             for (let i = 0; i < tiles.length; i++) {
-                await new Promise(r => setTimeout(r, 150));
-                tiles[i].classList.add('flip');
-                setTimeout(() => {
-                    tiles[i].classList.add(tileStates[i]);
-                    updateKey(currentGuess[i], tileStates[i]);
-                }, 250);
+                await new Promise(r => setTimeout(r, 100));
+                tiles[i].classList.add(states[i]);
+                const k = document.getElementById(`k-${currentGuess[i]}`);
+                if (states[i] === 'correct') k.style.background = 'var(--correct)';
+                else if (states[i] === 'present' && !k.style.background.includes('correct')) k.style.background = 'var(--present)';
+                else if (states[i] === 'absent' && !k.style.background) k.style.opacity = '0.4';
             }
 
-            await new Promise(r => setTimeout(r, 500));
-            const progress = (correctInGuess / targetMovie.length) * 100;
-            document.getElementById('xp-bar').style.width = Math.max(parseInt(document.getElementById('xp-bar').style.width || 0), progress) + "%";
+            const correctPct = (states.filter(s => s === 'correct').length / cleanTitle.length) * 100;
+            document.getElementById('xp-bar').style.width = correctPct + "%";
 
-            if (currentGuess === targetMovie) {
-                isGameOver = true;
-                gems++; streak++;
-                localStorage.setItem('gems', gems);
-                localStorage.setItem('streak', streak);
-                document.getElementById('win-msg').innerText = `Streak: ${streak} | Total Gems: ${gems}`;
-                document.getElementById('overlay').style.display = "block";
-                document.getElementById('win-screen').style.display = "block";
-            } else if (currentAttempt >= 5) {
-                isGameOver = true;
-                localStorage.setItem('streak', 0);
-                document.getElementById('lose-msg').innerText = `The movie was: ${targetMovie}`;
-                document.getElementById('overlay').style.display = "block";
-                document.getElementById('lose-screen').style.display = "block";
+            if (currentGuess === cleanTitle) {
+                endGame(true);
+            } else if (++currentAttempt >= 6) {
+                endGame(false);
+            }
+            currentGuess = "";
+        }
+
+        function endGame(win) {
+            isGameOver = true;
+            wonGame = win;
+            
+            if (win) {
+                if (!vaultData.some(v => v.title === fullTitle)) {
+                    streak++;
+                    vaultData.push({ 
+                        title: fullTitle, 
+                        hue: dailyHue, 
+                        date: new Date().toLocaleDateString() 
+                    });
+                }
+            } else { 
+                streak = 0; 
+            }
+            
+            localStorage.setItem('lastPlayedDate', todayStr);
+            localStorage.setItem('lastHistory', JSON.stringify(guessHistory));
+            localStorage.setItem('lastWin', win);
+            localStorage.setItem('streak', streak);
+            localStorage.setItem('movieVault', JSON.stringify(vaultData));
+            
+            setTimeout(() => {
+                document.getElementById('win-status').innerText = win ? "GEM UNLOCKED" : "VAULT LOCKED";
+                document.getElementById('modal-msg').innerText = win ? fullTitle : `The movie was: ${fullTitle}`;
+                document.getElementById('modal-overlay').style.display = 'block';
+                startCountdown();
+                updateStats();
+            }, 1200);
+        }
+
+        function showLockoutScreen() {
+            isGameOver = true;
+            wonGame = localStorage.getItem('lastWin') === 'true';
+            guessHistory = JSON.parse(localStorage.getItem('lastHistory')) || [];
+            document.getElementById('modal-gem').style.animation = "gemFloat 3s ease-in-out infinite";
+            document.getElementById('win-status').innerText = "PLAYED TODAY";
+            document.getElementById('modal-msg').innerText = "You've already completed today's challenge.";
+            document.getElementById('modal-overlay').style.display = 'block';
+            startCountdown();
+        }
+
+        function startCountdown() {
+            const timer = document.getElementById('countdown');
+            const interval = setInterval(() => {
+                const now = new Date();
+                const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+                const diff = tomorrow - now;
+                if (diff <= 0) { clearInterval(interval); location.reload(); }
+                const h = Math.floor((diff % 86400000) / 3600000).toString().padStart(2, '0');
+                const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+                timer.innerText = `${h}:${m}:${s}`;
+            }, 1000);
+        }
+
+        function shareResult() {
+            const attemptDisplay = wonGame ? guessHistory.length : 'X';
+            const textToShare = `Movie Gem 💎 ${attemptDisplay}/6\n\n${guessHistory.join('\n')}`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'Movie Gem', text: textToShare }).catch(err => console.log(err));
             } else {
-                currentAttempt++;
-                currentGuess = "";
-                isEvaluating = false;
+                navigator.clipboard.writeText(textToShare);
+                const btn = document.getElementById('share-btn');
+                const oldText = btn.innerHTML;
+                btn.innerHTML = "COPIED! ✔️";
+                setTimeout(() => btn.innerHTML = oldText, 2000);
             }
         }
 
-        function updateKey(letter, state) {
-            const keyBtn = document.getElementById(`key-${letter}`);
-            if (!keyBtn || keyBtn.classList.contains('correct')) return;
-            keyBtn.classList.add(state);
+        function renderVault() {
+            const list = document.getElementById('vault-list');
+            const sortedVault = [...vaultData].reverse();
+            list.innerHTML = sortedVault.length ? "" : "<p style='opacity:0.4; text-align:center; margin-top:40px;'>Vault is empty.</p>";
+            sortedVault.forEach(item => {
+                list.innerHTML += `<div class="gem-card"><span style="filter: hue-rotate(${item.hue}deg); font-size:1.5rem">💎</span><div><div style="font-weight:600">${item.title}</div><div style="font-size:0.7rem; opacity:0.5">${item.date}</div></div></div>`;
+            });
         }
 
-        initGame();
+        function updateStats() {
+            const actualGemCount = vaultData.length;
+            
+            // Logic Fix: A streak cannot be higher than the total gems owned
+            if (streak > actualGemCount) {
+                streak = actualGemCount;
+                localStorage.setItem('streak', streak);
+            }
+
+            document.getElementById('gem-count').innerText = actualGemCount;
+            document.getElementById('streak-count').innerText = streak;
+            localStorage.setItem('gems', actualGemCount);
+        }
+
+        function toggleVault() { 
+            const v = document.getElementById('vault');
+            v.classList.toggle('open');
+            if(v.classList.contains('open')) renderVault();
+        }
+        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+
+        init();
     </script>
 </body>
 </html>
