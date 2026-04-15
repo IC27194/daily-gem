@@ -1,382 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Movie Gem Daily</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4facfe;
-            --secondary: #00f2fe;
-            --bg: #0b0c14;
-            --tile-bg: #1a1b26;
-            --tile-border: #2f334d;
-            --correct: #538d4e;
-            --present: #b59f3b;
-            --absent: #3a3a3c;
-            --kb-key: #818384;
-            --glass: rgba(255, 255, 255, 0.05);
-            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(79, 172, 254, 0.15) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(0, 242, 254, 0.08) 0px, transparent 50%);
-            color: white;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden; /* Prevents scrolling during game */
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* --- Top Stats Bar --- */
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 90%;
-            max-width: 420px;
-            margin: 15px 0 10px 0;
-        }
-
-        .stat-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .stat-item {
-            background: var(--glass);
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(4px);
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: rgba(255,255,255,0.9);
-        }
-
-        .stat-icon { font-size: 1.1rem; }
-
-        /* --- XP Progress Bar --- */
-        #xp-container {
-            width: 90%;
-            max-width: 420px;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            margin-bottom: 15px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        #xp-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            box-shadow: 0 0 15px rgba(79, 172, 254, 0.7);
-            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-            border-radius: 20px;
-        }
-
-        /* --- Header & Clue --- */
-        .header { text-align: center; }
-        
-        .category-badge {
-            background: rgba(79, 172, 254, 0.1);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 700;
-            border: 1px solid rgba(79, 172, 254, 0.2);
-            display: inline-block;
-            margin-bottom: 5px;
-        }
-
-        .emoji-clue {
-            font-size: 2.8rem;
-            margin: 5px 0 15px 0;
-            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.2));
-            letter-spacing: 5px;
-        }
-
-        /* --- Game Grid --- */
-        #game-board {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: auto; /* Pushes keyboard down */
-            padding: 0 10px;
-        }
-
-        .row {
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-        }
-
-        .tile {
-            width: 36px;
-            height: 44px;
-            background-color: var(--tile-bg);
-            border: 2px solid var(--tile-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.4rem;
-            text-transform: uppercase;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            color: white;
-            box-sizing: border-box;
-        }
-        
-        /* Tablet/Desktop optimization */
-        @media (min-width: 600px) {
-            .tile { width: 45px; height: 55px; font-size: 1.8rem; }
-            .row { gap: 8px; }
-            #game-board { gap: 8px; }
-        }
-
-        /* LetterPop Animation when typing */
-        .tile.pop {
-            transform: scale(1.1);
-            border-color: #565f89;
-        }
-
-        /* Evaluation Styles */
-        .tile.correct { background-color: var(--correct); border-color: var(--correct); }
-        .tile.present { background-color: var(--present); border-color: var(--present); }
-        .tile.absent { background-color: var(--absent); border-color: var(--absent); }
-
-        /* Flip Animation */
-        .tile.flip { animation: flipIn 0.5s ease forwards; }
-        @keyframes flipIn {
-            0% { transform: rotateX(0deg); background-color: var(--tile-bg); border-color: var(--tile-border); }
-            45% { transform: rotateX(90deg); background-color: var(--tile-bg); border-color: var(--tile-border); }
-            55% { transform: rotateX(90deg); } /* Color applies here in JS */
-            100% { transform: rotateX(0deg); }
-        }
-
-        /* --- On-Screen Keyboard --- */
-        #keyboard {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px 20px 0 0;
-            margin-top: 20px;
-        }
-
-        .kb-row {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            margin-bottom: 6px;
-            touch-action: manipulation;
-        }
-
-        .key {
-            background: var(--kb-key);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 16px 0; /* Vertical padding only */
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            flex: 1; /* Equal width keys */
-            max-width: 40px; /* Prevents stretching on desktop */
-            transition: background 0.1s ease, transform 0.05s ease;
-            -webkit-tap-highlight-color: transparent;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .key:active { transform: scale(0.95); background: #acafb1; }
-        .key.wide { max-width: 65px; flex: 1.5; font-size: 0.75rem; }
-        
-        /* Keyboard Evaluation Styles */
-        .key.correct { background-color: var(--correct); }
-        .key.present { background-color: var(--present); }
-        .key.absent { background-color: #242529; opacity: 0.5; }
-
-        /* --- Screens & Overlays --- */
-        #overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
-            z-index: 999;
-            animation: fadeIn 0.3s ease;
-        }
-
-        /* Unified Glassmorphism Modal (Win/Loss) */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 85%; max-width: 360px;
-            background: rgba(18, 20, 32, 0.8); /* Translucent base */
-            backdrop-filter: blur(20px); /* Heavy frost */
-            -webkit-backdrop-filter: blur(20px);
-            padding: 40px 30px;
-            border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            text-align: center;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-            color: white;
-            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes modalPop {
-            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        .modal-icon { font-size: 4rem; margin-bottom: 15px; display: inline-block; }
-        .modal-title { font-weight: 700; font-size: 1.8rem; margin: 0 0 10px 0; letter-spacing: 0.5px; }
-        .modal-msg { font-size: 1rem; opacity: 0.8; margin-bottom: 25px; line-height: 1.5; }
-        
-        /* Win-specific style */
-        #win-screen { border-color: rgba(79, 172, 254, 0.4); box-shadow: 0 0 30px rgba(79, 172, 254, 0.2); }
-        .win-gem { animation: gemPulse 2s infinite; }
-
-        @keyframes gemPulse {
-            0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--primary)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--secondary)); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--primary)); }
-        }
-
-        /* Lose-specific style */
-        #lose-screen { border-color: rgba(255, 76, 76, 0.3); }
-
-        /* Action Buttons */
-        .action-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
-            transition: transform 0.1s ease, box-shadow 0.2s ease;
-        }
-        .action-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(0, 242, 254, 0.2); }
-
-        /* Utils */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    </style>
-</head>
-<body>
-
-    <div class="stats-bar">
-        <div class="stat-group">
-            <div class="stat-item"><span class="stat-icon">💎</span> <span id="gem-count">0</span></div>
-        </div>
-        <div class="header">
-            <div class="category-badge" id="category">Fetching Movie...</div>
-        </div>
-        <div class="stat-group">
-            <div class="stat-item"><span class="stat-icon">🔥</span> <span id="streak-count">0</span></div>
-        </div>
-    </div>
-
-    <div id="xp-container">
-        <div id="xp-bar"></div>
-    </div>
-
-    <div class="emoji-clue" id="emojis">🎬🍿✨</div>
-
-    <div id="game-board"></div>
-
-    <div id="keyboard">
-        <div class="kb-row" id="kb1"></div>
-        <div class="kb-row" id="kb2"></div>
-        <div class="kb-row" id="kb3"></div>
-    </div>
-
-    <div id="overlay"></div>
-
-    <div id="win-screen" class="modal">
-        <div class="modal-icon win-gem">💎</div>
-        <h2 class="modal-title">GEM COLLECTED!</h2>
-        <p class="modal-msg" id="win-msg">Excellent work, detective!</p>
-        <button class="action-btn" onclick="location.reload()">Next Gem Tomorrow</button>
-    </div>
-
-    <div id="lose-screen" class="modal">
-        <div class="modal-icon">🥺</div>
-        <h2 class="modal-title">OUT OF TRIES</h2>
-        <p class="modal-msg" id="lose-msg">The movie got away this time.</p>
-        <button class="action-btn" onclick="location.reload()" style="background: #3a3a3c; box-shadow: none;">Try Again Tomorrow</button>
-    </div>
-
-    <script>
-        // FACTORED IN URL
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyW2C-L9ud-uFn_e3QOJoRzn49lafCMh5PiiB7-VakJMb89F86TdEowo9uD5SN85R_k/exec;
+<script>
+        // FIXED: Added missing closing quote and standardized URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyW2C-L9ud-uFn_e3QOJoRzn49lafCMh5PiiB7-VakJMb89F86TdEowo9uD5SN85R_k/exec';
 
         let targetMovie = "";
         let currentAttempt = 0;
         let currentGuess = "";
         let isGameOver = false;
-        let isEvaluating = false; // Prevents typing during animation
+        let isEvaluating = false;
 
-        // Load Persistent Stats
         let gems = parseInt(localStorage.getItem('gems')) || 0;
         let streak = parseInt(localStorage.getItem('streak')) || 0;
         document.getElementById('gem-count').innerText = gems;
         document.getElementById('streak-count').innerText = streak;
 
-       async function initGame() {
-    try {
-        // We add a timestamp to the end to prevent the browser from "caching" old data
-        const response = await fetch(API_URL + '?nocache=' + new Date().getTime(), {
-            method: 'GET',
-            mode: 'cors', // Explicitly ask for Cross-Origin access
-            redirect: 'follow'
-        });
-        
-        const data = await response.json();
-        
-        if (!data || !data.word) {
-            throw new Error("Data format incorrect");
+        async function initGame() {
+            try {
+                const response = await fetch(API_URL + '?nocache=' + new Date().getTime(), {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                const data = await response.json();
+                if (!data || !data.word) throw new Error("Data error");
+
+                targetMovie = data.word.toUpperCase().replace(/[\s-]/g, ''); 
+                document.getElementById('emojis').innerText = data.emojis;
+                document.getElementById('category').innerText = data.cat;
+                
+                createBoard(targetMovie.length);
+                createKeyboard();
+                document.addEventListener('keydown', handlePhysicalInput);
+            } catch (err) {
+                document.getElementById('category').innerText = "CONNECTION ERROR";
+                console.error(err);
+            }
         }
 
-        targetMovie = data.word.toUpperCase().replace(/[\s-]/g, ''); 
-        document.getElementById('emojis').innerText = data.emojis;
-        document.getElementById('category').innerText = data.cat;
-        
-        createBoard(targetMovie.length);
-        createKeyboard();
-        document.addEventListener('keydown', handlePhysicalInput);
-        
-    } catch (err) {
-        document.getElementById('category').innerText = "API CONNECTION ERROR";
-        console.error("Fetch Error:", err);
-    }
-}
+        function createBoard(len) {
+            const board = document.getElementById('game-board');
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                for (let j = 0; j < len; j++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    row.appendChild(tile);
+                }
+                board.appendChild(row);
+            }
+        }
+
+        function createKeyboard() {
+            const rows = ["QWERTYUIOP", "ASDFGHJKL", "✓ZXCVBNM⌫"];
+            rows.forEach((rowStr, idx) => {
+                const container = document.getElementById(`kb${idx+1}`);
+                const keys = rowStr.match(/✓|⌫|[A-Z]/g);
+                keys.forEach(key => {
+                    const btn = document.createElement('button');
+                    btn.className = 'key';
+                    if (key === '✓' || key === '⌫') btn.classList.add('wide');
+                    btn.innerText = key === '✓' ? 'ENTER' : key === '⌫' ? 'DEL' : key;
+                    btn.id = `key-${key}`;
+                    btn.onclick = () => handleInput(key);
+                    container.appendChild(btn);
+                });
+            });
+        }
+
+        function handlePhysicalInput(e) {
+            if (isGameOver || isEvaluating) return;
+            if (e.key === 'Enter') handleInput('✓');
+            else if (e.key === 'Backspace') handleInput('⌫');
+            else if (/^[a-zA-Z]$/.test(e.key)) handleInput(e.key.toUpperCase());
+        }
+
+        function handleInput(key) {
+            if (isGameOver || isEvaluating) return;
+            const rows = document.getElementsByClassName('row');
+            const tiles = rows[currentAttempt].children;
+
+            if (key === "⌫") {
+                if (currentGuess.length > 0) {
+                    currentGuess = currentGuess.slice(0, -1);
+                    tiles[currentGuess.length].innerText = "";
+                    tiles[currentGuess.length].classList.remove('pop');
+                }
+            } else if (key === "✓") {
+                if (currentGuess.length === targetMovie.length) submitGuess();
+            } else if (currentGuess.length < targetMovie.length) {
+                tiles[currentGuess.length].innerText = key;
+                tiles[currentGuess.length].classList.add('pop');
+                currentGuess += key;
+            }
+        }
+
+        async function submitGuess() {
+            isEvaluating = true;
+            const rows = document.getElementsByClassName('row');
+            const tiles = rows[currentAttempt].children;
+            let correctInGuess = 0;
+            const targetLetters = targetMovie.split('');
+            const tileStates = new Array(targetMovie.length).fill('absent');
+
+            for (let i = 0; i < targetMovie.length; i++) {
+                if (currentGuess[i] === targetLetters[i]) {
+                    tileStates[i] = 'correct';
+                    targetLetters[i] = null;
+                    correctInGuess++;
+                }
+            }
+
+            for (let i = 0; i < targetMovie.length; i++) {
+                if (tileStates[i] === 'absent' && targetLetters.includes(currentGuess[i])) {
+                    tileStates[i] = 'present';
+                    targetLetters[targetLetters.indexOf(currentGuess[i])] = null;
+                }
+            }
+
+            for (let i = 0; i < tiles.length; i++) {
+                await new Promise(r => setTimeout(r, 150));
+                tiles[i].classList.add('flip');
+                setTimeout(() => {
+                    tiles[i].classList.add(tileStates[i]);
+                    updateKey(currentGuess[i], tileStates[i]);
+                }, 250);
+            }
+
+            await new Promise(r => setTimeout(r, 500));
+            const progress = (correctInGuess / targetMovie.length) * 100;
+            document.getElementById('xp-bar').style.width = Math.max(parseInt(document.getElementById('xp-bar').style.width || 0), progress) + "%";
+
+            if (currentGuess === targetMovie) {
+                isGameOver = true;
+                gems++; streak++;
+                localStorage.setItem('gems', gems);
+                localStorage.setItem('streak', streak);
+                document.getElementById('win-msg').innerText = `Streak: ${streak} | Total Gems: ${gems}`;
+                document.getElementById('overlay').style.display = "block";
+                document.getElementById('win-screen').style.display = "block";
+            } else if (currentAttempt >= 5) {
+                isGameOver = true;
+                localStorage.setItem('streak', 0);
+                document.getElementById('lose-msg').innerText = `The movie was: ${targetMovie}`;
+                document.getElementById('overlay').style.display = "block";
+                document.getElementById('lose-screen').style.display = "block";
+            } else {
+                currentAttempt++;
+                currentGuess = "";
+                isEvaluating = false;
+            }
+        }
+
+        function updateKey(letter, state) {
+            const keyBtn = document.getElementById(`key-${letter}`);
+            if (!keyBtn || keyBtn.classList.contains('correct')) return;
+            keyBtn.classList.add(state);
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
