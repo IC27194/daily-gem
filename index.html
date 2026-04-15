@@ -352,19 +352,31 @@
         document.getElementById('gem-count').innerText = gems;
         document.getElementById('streak-count').innerText = streak;
 
-        async function initGame() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                // Process target: Upper case, remove spaces/hyphens for game logic
-                targetMovie = data.word.toUpperCase().replace(/[\s-]/g, ''); 
-                
-                document.getElementById('emojis').innerText = data.emojis;
-                document.getElementById('category').innerText = data.cat;
-                
-                createBoard(targetMovie.length);
-                createKeyboard();
-                
-                // Allow physical keyboard input too
-                document.addEventListener('keydown', handlePhysicalInput);
+       async function initGame() {
+    try {
+        // We add a timestamp to the end to prevent the browser from "caching" old data
+        const response = await fetch(API_URL + '?nocache=' + new Date().getTime(), {
+            method: 'GET',
+            mode: 'cors', // Explicitly ask for Cross-Origin access
+            redirect: 'follow'
+        });
+        
+        const data = await response.json();
+        
+        if (!data || !data.word) {
+            throw new Error("Data format incorrect");
+        }
+
+        targetMovie = data.word.toUpperCase().replace(/[\s-]/g, ''); 
+        document.getElementById('emojis').innerText = data.emojis;
+        document.getElementById('category').innerText = data.cat;
+        
+        createBoard(targetMovie.length);
+        createKeyboard();
+        document.addEventListener('keydown', handlePhysicalInput);
+        
+    } catch (err) {
+        document.getElementById('category').innerText = "API CONNECTION ERROR";
+        console.error("Fetch Error:", err);
+    }
+}
